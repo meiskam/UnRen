@@ -44,7 +44,7 @@ REM set rpatool01=
 REM --------------------------------------------------------------------------------
 REM !! DO NOT EDIT BELOW THIS LINE !!
 REM --------------------------------------------------------------------------------
-set "version=0.9.0-dev ([DEV//BUILD_DATE])"
+set "version=0.9.0-dev-edited ([DEV//BUILD_DATE])"
 title UnRen.bat v%version%
 :init
 REM --------------------------------------------------------------------------------
@@ -118,8 +118,10 @@ echo     3) Enable Console and Developer Menu
 echo     4) Enable Quick Save and Quick Load
 echo     5) Force enable skipping of unseen content
 echo     6) Force enable rollback (scroll wheel)
+echo     7) Extract RPA, only scripts
 echo/
-echo     9) All of the above
+echo     8) All 2-7 (only scripts)
+echo     9) All 1-6
 echo/
 set /p option=.  Enter a number: 
 echo/
@@ -131,6 +133,8 @@ if "%option%"=="3" goto :console
 if "%option%"=="4" goto :quick
 if "%option%"=="5" goto :skip
 if "%option%"=="6" goto :rollback
+if "%option%"=="7" goto :extract
+if "%option%"=="8" goto :extract
 if "%option%"=="9" goto :extract
 goto :init
 
@@ -169,12 +173,39 @@ if not exist "%rpatool%" (
 REM --------------------------------------------------------------------------------
 REM Unpack RPA
 REM --------------------------------------------------------------------------------
+set scriptonly=0
+if "%option%" == "7" (
+	set scriptonly=1
+)
+if "%option%" == "8" (
+	set scriptonly=1
+)
 echo/
 echo   Searching for RPA packages
+if "%scriptonly%" == "1" (
+	echo    - Scripts only
+)
 cd "%gamedir%"
 for %%f in (*.rpa) do (
 	echo    + Unpacking "%%~nf%%~xf" - %%~zf bytes
-	"%pythondir%python.exe" -O "%rpatool%" -x "%%f"
+	if "%scriptonly%" == "1" (
+		setlocal enabledelayedexpansion
+			set files=
+			for /F "tokens=* usebackq" %%g IN (`""%pythondir%python.exe" -O "%rpatool%" -l "%%f" | findstr .rpy"`) do (
+				set "files=!files! "%%g""
+			)
+			if not "!files!" == "" (
+				"%pythondir%python.exe" -O "%rpatool%" -x "%%f" "!files!"
+			)
+			pause
+		endlocal
+	) else (
+		"%pythondir%python.exe" -O "%rpatool%" -x "%%f"
+	)
+)
+
+if "%option%" == "8" (
+	set option=9
 )
 
 REM --------------------------------------------------------------------------------
