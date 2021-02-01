@@ -191,11 +191,11 @@ for %%f in (*.rpa) do (
 	if "%scriptonly%" == "1" (
 		setlocal enabledelayedexpansion
 			set files=
-			for /F "tokens=* usebackq" %%g IN (`""%pythondir%python.exe" -O "%rpatool%" -l "%%f" | findstr .rpy"`) do (
+			for /F "tokens=* usebackq" %%g in (`""%pythondir%python.exe" -O "%rpatool%" -l "%%f" | findstr .rpy"`) do (
 				set "files=!files! "%%g""
 			)
 			if not "!files!" == "" (
-				"%pythondir%python.exe" -O "%rpatool%" -x "%%f" "!files!"
+				"%pythondir%python.exe" -O "%rpatool%" -x "%%f" !files!
 			)
 			pause
 		endlocal
