@@ -53,7 +53,7 @@ if (fse.existsSync(buildDest)) {
 let unrenSrc = fse.readFileSync(unrenPath, 'utf8');
 
 gitClone({
-	url: 'https://github.com/F95Sam/unrpyc',
+	url: 'https://github.com/CensoredUsername/unrpyc',
 	tmpGit: 'unrpyc',
 //	branch: 'tag_bypass',
 	callback: (commit, repoPath) => {
@@ -61,6 +61,7 @@ gitClone({
 		let filesPath = path.resolve(repoPath, 'files.txt');
 
 		fse.renameSync(path.resolve(repoPath, 'unrpyc.py'), path.resolve(cabFolder, 'unrpyc.py'));
+		fse.renameSync(path.resolve(repoPath, 'deobfuscate.py'), path.resolve(cabFolder, 'deobfuscate.py'));
 
 		exec('dir /s /b /a-d "' + cabFolder + '" >"' + filesPath + '"', (err, stdout, stderr) => {
 			if (err) {

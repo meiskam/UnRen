@@ -197,7 +197,7 @@ for %%f in (*.rpa) do (
 			if not "!files!" == "" (
 				"%pythondir%python.exe" -O "%rpatool%" -x "%%f" !files!
 			)
-			pause
+			REM pause
 		endlocal
 	) else (
 		"%pythondir%python.exe" -O "%rpatool%" -x "%%f"
@@ -226,8 +226,9 @@ REM Write to temporary file first, then convert. Needed due to binary file
 REM --------------------------------------------------------------------------------
 :decompile
 set "unrpyccab=%gamedir%..\_unrpyc.cab"
-set "decompilerdir=%gamedir%..\decompiler"
-set "unrpycpy=%gamedir%..\unrpyc.py"
+set "decompilerdir=%gamedir%decompiler"
+set "unrpycpy=%gamedir%unrpyc.py"
+set "deobfuscatepy=%gamedir%deobfuscate.py"
 echo/
 echo   Creating _unrpyc.cab...
 if exist "%unrpyccab%.tmp" (
@@ -238,6 +239,9 @@ if exist "%unrpyccab%" (
 )
 if exist "%unrpycpy%" (
 	del "%unrpycpy%"
+)
+if exist "%deobfuscatepy%" (
+	del "%deobfuscatepy%"
 )
 if exist "%decompilerdir%" (
 	rmdir /Q /S "%decompilerdir%"
@@ -259,6 +263,7 @@ echo   Extracting _unrpyc.cab...
 mkdir "%decompilerdir%"
 expand -F:* "%unrpyccab%" "%decompilerdir%" >nul
 move "%decompilerdir%\unrpyc.py" "%unrpycpy%" >nul
+move "%decompilerdir%\deobfuscate.py" "%deobfuscatepy%" >nul
 
 REM --------------------------------------------------------------------------------
 REM Check if unrpyc is there
@@ -292,6 +297,9 @@ echo   Cleaning up temporary files...
 del "%unrpyccab%.tmp"
 del "%unrpyccab%"
 del "%unrpycpy%"
+del "%unrpycpy%o"
+del "%deobfuscatepy%"
+del "%deobfuscatepy%o"
 rmdir /Q /S "%decompilerdir%"
 
 if not %err% == 0 goto :error
